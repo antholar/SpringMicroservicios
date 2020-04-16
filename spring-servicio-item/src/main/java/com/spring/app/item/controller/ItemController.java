@@ -46,8 +46,8 @@ public class ItemController {
 	private Environment env;  //variable para obtener los datos del archivo properties
 	
 	@Autowired
-	//@Qualifier("serviceFeign")
-	@Qualifier("serviceRestTemplate")
+	@Qualifier("serviceFeign")
+	//@Qualifier("serviceRestTemplate")
 	private ItemService itemService;
 	
 	//variable para obtener el texto de configuracion, del archivo GIT
