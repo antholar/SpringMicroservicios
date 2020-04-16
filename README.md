@@ -1,25 +1,20 @@
 # SpringMicroservicios
 
-Implementacion de Hyxtrix
+Implementacion de servicio Zuul
 
 ## Apuntes
-- Hyxtrix: tolerancia de fallas en los microservicios
+Configuracion Zuul para la seguridad de las peticiones. da la ventaja que solo se configura una ves la seguridad en ves de dar spring security por cada proyecto
 
-Se configuro en los servicios, la generacion de puertos aleatoreos Se agregan las siguientes lineas en el application.properties 
-```
-server.port=${PORT:0} 
-eureka.instance.instance-id=${spring.application.name}:${spring.application.instance_id:${random.value}} 
-eureka.client.service-url.defaultZone=http://localhost:8761/eureka
-```
+Caracteristicas
+- Erutamiento dimanico
+- integracion con ribbon - Balanceo de carga al hacer las peticiones
+- Tiene distintos filtros para dar seguridad a los distintos microservicios
+- Monitorear metricas y tolerancia de errores 
 
-Para habilitar histrix se debe de agregar la dependencia en el proyecto item - Hystrix El la clase de configuraciuon se agrega la siguiente etiqueta 
-```
-@EnableCircuitBreaker
-```
-Esta etiqueta sirve para ver errores de comunicacion o cortes, tiempos fuera, etc. Esta dependencia incluye Ribbon para analizar los posibles errores como latencia
+Se crea otro proyecto con las dependencias: 
+- Spring boot devtools
+- Eureka discovery client
+- zuul 
+- spring web
 
-En el servicio item, se agrego la etiqueta de 
-```
-@HystrixCommand(fallbackMethod = "metodoAlternativo") 
-```
-Definiendo la funcion que debe de tomar cuando hay un error. Esta funcion es creada en el controlador
+La ventaja de zuul es que centraliza todas las rutas en una sola ruta, manejando errores, seguridad y peticiones en un solo proyecto. Dandole una doble seguridad a los proyectos 
