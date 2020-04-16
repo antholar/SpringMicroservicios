@@ -1,43 +1,25 @@
 # SpringMicroservicios
 
-Creacion del servicio de Eureka
+Implementacion de Hyxtrix
 
 ## Apuntes
+- Hyxtrix: tolerancia de fallas en los microservicios
 
-Creacion del servidor eureka que registra los microservicios que se conecten y los agrupa para facilitar la comunicacion entre el cliente y el servidor
-
-### Configuracion del servicio Eureka
-
-Las dependencias que se utilizaron en el servidor Eureka son 
-	- Eureka Server
-	- Dev Tools
-Se debe de agregar la dependencia de jaxb, solo si se esta trabajando con un jdk mayor al 9
+Se configuro en los servicios, la generacion de puertos aleatoreos Se agregan las siguientes lineas en el application.properties 
 ```
-<dependency>
-  <groupId>org.glassfish.jaxb</groupId>
-  <artifactId>jaxb-runtime</artifactId>
-</dependency>
-```
-
-El servidor Eureka debe de tener las siguientes configuraciones
-```
-spring.application.name=servicio-eureka-server
-server.port=8761
-eureka.client.register-with-eureka=false
-eureka.client.fetch-registry=false
-```
-
-### Configuracion de los servicios
-Los otros servicios, para que se conecten al servidor Eureka, deben de tener la siguiente dependencia
-- Eureka discovery
-
-Tambien en el archivo de configuracion de los servicios es recomendable agregar la siguiente etiqueta. 
-- @EnableEurekaClient
-
-Este paso no es del todo necesario, ya que al agregar la dependencia de "Eureka Discovery" se entiende q es cliente pero siempre es bueno poner la etiqueta para indicarlo.
-
-Luego se indica en los archivos de propiedades de cada servicio el url del servidor eureka
-```
+server.port=${PORT:0} 
+eureka.instance.instance-id=${spring.application.name}:${spring.application.instance_id:${random.value}} 
 eureka.client.service-url.defaultZone=http://localhost:8761/eureka
 ```
-Se debe de quitar las configuraciones de Ribbon ya que Eureka Cliente ya lo tiene implementado
+
+Para habilitar histrix se debe de agregar la dependencia en el proyecto item - Hystrix El la clase de configuraciuon se agrega la siguiente etiqueta 
+```
+@EnableCircuitBreaker
+```
+Esta etiqueta sirve para ver errores de comunicacion o cortes, tiempos fuera, etc. Esta dependencia incluye Ribbon para analizar los posibles errores como latencia
+
+En el servicio item, se agrego la etiqueta de 
+```
+@HystrixCommand(fallbackMethod = "metodoAlternativo") 
+```
+Definiendo la funcion que debe de tomar cuando hay un error. Esta funcion es creada en el controlador

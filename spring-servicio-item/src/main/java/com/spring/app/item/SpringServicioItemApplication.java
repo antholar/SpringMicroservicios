@@ -2,10 +2,12 @@ package com.spring.app.item;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
+@EnableCircuitBreaker  //sirve para ver errores de comunicacion o cortes, tiempos fuera, etc. comunicacion de los microservicios, incluye ribben para analizar los posibles errores como latencia
 @EnableEurekaClient
 @EnableFeignClients   //es una libreria que facilita el http de los clientes y su comunicacion con servicios web
 @SpringBootApplication
