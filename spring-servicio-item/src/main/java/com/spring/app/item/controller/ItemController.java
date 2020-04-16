@@ -1,9 +1,18 @@
 package com.spring.app.item.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +22,7 @@ import com.spring.app.item.models.Item;
 import com.spring.app.item.models.Producto;
 import com.spring.app.item.models.service.ItemService;
 
+@RefreshScope
 @RestController
 public class ItemController {
 	
@@ -24,10 +34,21 @@ public class ItemController {
 	 * Como buena practica, se usan los servicios la primera letra en minusculas y lo demas
 	 * como esta en el nombre. Mirar el servicio ItemServiceFeign para ver el nombre del servicio
 	 * */
+	
+	private static Logger log = LoggerFactory.getLogger(ItemController.class);
+	
+	@Autowired
+	private Environment env;  //variable para obtener los datos del archivo properties
+	
 	@Autowired
 	@Qualifier("serviceFeign")
 	//@Qualifier("serviceRestTemplate")
 	private ItemService itemService;
+	
+	//variable para obtener el texto de configuracion, del archivo GIT
+	@Value("${configuracion.texto}")
+	private String textoConfiguracion;
+	
 	
 	@GetMapping("/listar")
 	public List<Item> Listar(){
@@ -52,4 +73,23 @@ public class ItemController {
 		return item;
 		
 	}
+	
+	
+	@GetMapping("/obtener-config")
+	public ResponseEntity<?> obtenerConfig(@Value("${server.port}") String puerto){  //otra forma de obtener datos del archivo de configuracion
+		log.info(textoConfiguracion);
+		
+		Map<String,String> json = new HashMap<>();
+		json.put("textoConfiguracion",textoConfiguracion);
+		json.put("puerto",puerto);
+		
+		
+		if(env.getActiveProfiles().length>0      //se verifica si se esta usando las configuraciones de profile
+				&& env.getActiveProfiles()[0].equals("dev") ) {    //se verifica si el perfil esta en desarrollo, en cuanto al perfil de uso se puede usar mas de uno al mismo tiempo x eso es un array
+			json.put("autor.nombre",env.getProperty("configuracion.autor.nombre") );
+			json.put("autor.email",env.getProperty("configuracion.autor.email") );
+		}	
+		return new ResponseEntity<Map<String,String> >(json,HttpStatus.OK);
+	}
+	
 }
