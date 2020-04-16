@@ -13,10 +13,9 @@ import org.springframework.web.client.RestTemplate;
 import com.spring.app.item.models.Item;
 import com.spring.app.item.models.Producto;
 
-@Service
+@Service("serviceRestTemplate")
 public class ItemServiceImpl implements ItemService {
 
-	//implementacion realizada desde el AppConfig para establecer este tipo de conexiones
 	@Autowired
 	private RestTemplate clienteRest;
 	

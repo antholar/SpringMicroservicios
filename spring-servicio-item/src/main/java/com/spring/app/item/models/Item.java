@@ -1,5 +1,7 @@
 package com.spring.app.item.models;
 
+import java.util.Date;
+
 public class Item {
 
 	private Producto producto;
@@ -21,6 +23,10 @@ public class Item {
 		return producto;
 	}
 
+	public String getEstado() {
+		return "regresa el estado";
+	}
+	
 	public void setProducto(Producto producto) {
 		this.producto = producto;
 	}
