@@ -1,81 +1,74 @@
 # SpringMicroservicios
 
-Centralizacion de Entitys
+Spring Cloud Security implementando OAuth2 y JWT
 
 ## Apuntes
 
-La idea de crear un proyecto que centralize algunas propiedades de los otros proyectos, en este caso el entity, que seran utilizados en items y productos
+Se va a tener que crear otro proyecto el cual valide las autorizaciones de los usuarios . 
 
-Es necesario crear otro proyecto el que llamaremos commons.
+Se creara un microservicio que gestione las autorizaciones generando los jwt. Zuul gestionara el acceso a los recursos utilizando el servidor de autorizaciones y el serviico de usuraios
 
-Este proyecto tiene que tener los paquetes
-- Spring Data JPA
-- H2 Database
+----------------------------------
 
-Del archivo SpringServicioCommonsApplication se debe de borrar las lineas de configuracion de un proyecto JPA, debiendo quedar de la siguiente forma
+Proyecto de clientes
+Se necesita crear un proyecto con los siguientes microservicios. 
+- Spring boot devtools
+- spring data jpa
+- h2
+- eureka discovery client
+- spring web
+	
+Se configura el servicio para que tome un puerto aleatoreo y para que se puede conectar al servidor eureka como cliente. esto servira para facilitar las conexiones con el serviicio atraves del nombre
+
+Las configuraciones realizadas son las siguientes
+ - selecion automatica del puerto
+	``` 
+	server.port=${PORT:0}   
+	```
+ - generacion del id de manera automatica del servicio
+ 	```
+	eureka.instance.instance-id=${spring.application.name}:${spring.application.instance_id:${random.value}}
+	```
+ - es necesario especificar la ruta al servidor eureka
+ 	```
+	eureka.client.service-url.defaultZone=http://localhost:8761/eureka
+	```
+ - muestra las consultas que realiza a la base de datos en SQL en la consula
+ 	```
+	logging.level.org.hibernate.SQL=debug 
+	```
+
+---------------------------------------------
+
+Se creara los entity de usuario, roles y usuarios_roles
+
+Se crearon los vinculos entre los entitys de Usuarios y roles. Para eso se creo en usuarios una variable que es la siguiente 
 ```
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-@SpringBootApplication
-public class SpringServicioCommonsApplication {
-}
-```
-Tambien de POW.xml se quitaran el plugin de MAVEN
-```
-<build>
-	<plugins>
-		<plugin>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-maven-plugin</artifactId>
-		</plugin>
-	</plugins>
-</build>
-```
-
-Se crea el package y la clase entity
-
-Se compila ingresando a la carpeta del proyecto desde el cmd y se ingresa el siguiente codigo
-```
-mvnw.cmd install
-```
-
-Esto compilara el proyecto y generara un jar en la carpeta target
-
--------------------------------
-
-Se debe de configurar en la clse SpringServicioCommonsApplication lo que es la autoconfiguracion de H2, como se usara en item y en productos no necesariamente va a tener configuradas las variables de H2. se agrega la siguiente etiqueta
-```
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
-```
-
-Tambien  se borro del pow.xml la dependencia h2 para que no sea obligatoria de compilar, pero esto es opcional 
-
-Se debe de copiar del pow.xml de commons los siguientes etiquetas para ser puestas como dependencias en productos
-```
-<groupId>com.spring.app.commons</groupId>
-<artifactId>spring-servicio-commons</artifactId>
-<version>0.0.1-SNAPSHOT</version>
+@ManyToMany(fetch = FetchType.LAZY) 
+private List<Role> roles;
 ```
 
-Se debe reemplazar todas las dependencias que se haga a 
-```
-import com.spring.app.productos.models.entity.Producto;
-```
-que viene a ser el entity de la clase, con el entity del commons o del proyecto compilado
-```
-import com.spring.app.commons.models.entity.Producto;
-```
-tambien se puede eliminar la clase entity del proyecto 
+Donde establece el vinculo con el entity Role. este vinculo crea una tabla intermedia, uniendo el ide del usuario y varios roles. Para ver todos los roles relacionados, solo se debe de consutar en el entity el array, la automaticamente el crud crea la tabla intermedia
 
---------------------------------------
-
-Se debe de indicar en la clase de configuracion  que debe de leer los entity del proyecto commons. Se le pasa como etiqueta el package de donde estan guardados los entity. Si tuvieramos otros packages solo se agrega con comas los otros paquetes
+Para personalizar esta tabla intermedia se debe de ingresar el siguiente codigo
 ```
-@EntityScan({"com.spring.app.commons.models.entity"})
+@ManyToMany(fetch = FetchType.LAZY) 
+@JoinTable(name="usuarios_to_roles", joinColumns = @JoinColumn(name="user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"),
+, uniqueConstraints = {@UniqueConstraint(columnNames = {"user_idd","role_id"})} )
+private List<Role> roles;
 ```
 
-Para items se hace lo mismo q en el producto, hasta la configuracion de la clase de configuraciones, si se usara base de datos no se debe de usar la exclusion de las configuraciones del datasource
+Donde joinColumns quiere decir el nombre de la columna principal y el inverseJoinColumns determina el id de la llave foranea en este caso sera roles
+
+
+Se determina otra variable que es uniqueConstraints, que sirve para indicar que no debe de haber claves repetidas
+
+----------------------------------------
+
+De igual forma para el entity roles se debe de especificar el enlace
 ```
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
+@ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles") 
+private List<Usuario> usuarios;
 ```
 
-En item no se usa @EntityScan ya que no es necesario para item
+El mappedBy indica a q variable se mapeara, en este caso se mapeara a la variable Roles de la clase Usuario, realizando la relacion
