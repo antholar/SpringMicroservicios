@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.spring.app.item.clientes.ProductoClienteRest;
 import com.spring.app.item.models.Item;
-import com.spring.app.item.models.Producto;
+import com.spring.app.commons.models.entity.Producto;
 
 @Service("serviceFeign")
 //@Primary  //sirve para indicar que servicio se debe de considerar 

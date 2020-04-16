@@ -2,7 +2,7 @@ package com.spring.app.productos.models.service;
 
 import java.util.List;
 
-import com.spring.app.productos.models.entity.Producto;
+import com.spring.app.commons.models.entity.Producto;
 
 /*
  *	El servicio se puede utilizar para juntar muchos dao en una sola clase, ya que el servicio implementa todas las funciones del dao 

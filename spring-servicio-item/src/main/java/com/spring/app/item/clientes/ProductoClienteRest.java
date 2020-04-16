@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.spring.app.item.models.Producto;
+import com.spring.app.commons.models.entity.Producto;
 
 //con feign se especifica el nombre del servidor al que se quiere conectar junto con la URL
 //

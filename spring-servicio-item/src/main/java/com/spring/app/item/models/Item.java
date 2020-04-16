@@ -2,6 +2,8 @@ package com.spring.app.item.models;
 
 import java.util.Date;
 
+import com.spring.app.commons.models.entity.Producto;
+
 public class Item {
 
 	private Producto producto;
