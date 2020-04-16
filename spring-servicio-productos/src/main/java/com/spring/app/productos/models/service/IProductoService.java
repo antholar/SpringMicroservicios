@@ -15,4 +15,8 @@ public interface IProductoService {
 	//obtener la lista competa de los productos
 	public List<Producto> findAll();
 	public Producto findById(Long id);
+	
+	public Producto save(Producto producto);
+	public void deleteById(long id);
+	
 }

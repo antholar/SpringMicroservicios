@@ -1,16 +1,10 @@
 # SpringMicroservicios
 
-Centralizacion de configuraciones remotas
+Actualizacion de Crud con los proyectos Zuul
 
 ## Apuntes
-Para que consulte las configuraciones remotamente, se tiene q subir las configuraciones a github y se vinciula segun el URL generado desde github 
-Una ves vinculado se cambia en el proyecto de configuraciones en ves del file la url
-```
-spring.cloud.config.server.git.uri=https://github.com/antholar/SpringConfiguraciones.git
-```
 
-Luego se verifica si las configuraciones son correctas en el url de verificacion
-```
-localhost:8090/api/items/obtener-config
-localhost:8888/servicio-items/prod
-```
+Se crearon los metodos en el servicio para que puedan borrar buscar y guardar nuevos productos
+Tambien se crearon los metodos handler en el controlador para poder acceder a estos metodos en productos
+Se crearon los metodos en item para que puedan llamar a los nuevos metodos en el servicio y en el serviceRestTemplate
+Se implemento en controladores los metodos para crear productos desde el item, se crearon URLS para zuul y resttemplate. 

@@ -6,8 +6,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.app.productos.models.entity.Producto;
@@ -56,5 +62,31 @@ public class ProductoController {
 			e.printStackTrace();
 		}*/
 		return producto;
+	}
+	
+	@PostMapping("/crear") 
+	@ResponseStatus(HttpStatus.CREATED)
+	public Producto crear(@RequestBody Producto producto) {
+		//Los parametros enviados en el json deben de coincidir con los atributos del objeto productos, el mapeo es automatico creando el objeto
+		//Por JSON son pasados los datos del producto en el cuerpo del mensaje, es necesario
+		//especificar que es un request
+		return productoService.save(producto);
+	}
+	
+	@PutMapping("/editar/{id}")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Producto editar(@RequestBody Producto producto, @PathVariable Long id) {
+		Producto productoDb = productoService.findById(id);
+		
+		productoDb.setNombre(producto.getNombre() );
+		productoDb.setPrecio(producto.getPrecio());
+		
+		return productoService.save(productoDb);
+	}	
+	
+	@DeleteMapping("/eliminar/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT) //porque no devuelve nada solo elemina los datos se envia el codigo 204
+	public void eliminar(@PathVariable Long id) {
+		productoService.deleteById(id);
 	}
 }
