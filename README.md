@@ -52,6 +52,7 @@ El servidor de configuraciones se ejecuta como un singleton, por lo que cuando h
 
 Tambien se debe de agregar la siguiente dependencia al proyecto de item, para que refrescar el proyecto depues de realizadas los cambios a las configuraciones
 - Ops -> Spring boot actuator
+
 En el bootstrap se debe de agregar la linea. Que permite actualizar todos los componentens ingresados con refreshScope, en este caso se puso * para que actualize todos los componentes
 ```
 management.endpoints.web.exposure.include=*
